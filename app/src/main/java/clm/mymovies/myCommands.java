@@ -3,6 +3,7 @@ package clm.mymovies;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 /**
  * Created by CLM on 7/24/2016.
@@ -21,24 +22,37 @@ public class myCommands {
 
     public Cursor getDbQuery()
     {
-        return helper.getReadableDatabase().query(myConstants.DB_TABLE,null,null,null,null,null,null);
+
+        Log.d("DB ","Read Full DB");
+        Cursor c=helper.getReadableDatabase().query(myConstants.DB_TABLE,null,null,null,null,null,null);
+//        Log.d("Read Full DB","..");
+        return c;
     }
 
     public Cursor getDbQuery(int dbID)
     {
-        return helper.getReadableDatabase().query(myConstants.DB_TABLE,null,null,null,null,null,null);
+        Log.d("DB ","Read DB ID "+dbID);
+        Cursor c=helper.getReadableDatabase().query(myConstants.DB_TABLE,null,null,null,null,null,null);
+        return c;
     }
 
+    public boolean clearDB()
+    {
+        return helper.getWritableDatabase().delete(myConstants.DB_TABLE,"1",null)>0;
+    }
     public void addDb(myMovie movie)
     {
         ContentValues cv=new ContentValues();
         cv.put(myConstants.DB_MOVIE_NAME,movie.name);
         cv.put(myConstants.DB_MOVIE_DESC,movie.body);
         cv.put(myConstants.DB_MOVIE_URL,movie.url);
-
+        Log.d("DB ","Add :"+movie.name);
         helper.getWritableDatabase().insert(myConstants.DB_TABLE,null,cv);
     }
-
+    public void Logger(String s)
+    {
+        Log.d("_DB",s);
+    }
     public boolean deleteDb(myMovie movie)
     {
         int dbID=movie._id;

@@ -3,6 +3,7 @@ package clm.mymovies;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by CLM on 7/24/2016.
@@ -15,15 +16,15 @@ public class myDbHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createQuery
-                ="CREATE TABLE"
-                +myConstants.DB_TABLE+" ("
-                +myConstants.DB_ID+" PRIMARY KEY AUTOINCREMENT,"
-                +myConstants.DB_MOVIE_NAME+" TEXT,"
-                +myConstants.DB_MOVIE_DESC+" TEXT,"
+                ="CREATE TABLE "
+                +myConstants.DB_TABLE+" ( "
+                +myConstants.DB_ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"
+                +myConstants.DB_MOVIE_NAME+" TEXT , "
+                +myConstants.DB_MOVIE_DESC+" TEXT , "
                 +myConstants.DB_MOVIE_URL+" TEXT "
                 +");";
 
-
+        Log.d("DB ","Create DB: "+createQuery);
         db.execSQL(createQuery);
 
     }

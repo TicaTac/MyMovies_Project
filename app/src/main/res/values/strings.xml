@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MyMovies</string>
+    <string name="erase_all">Erase All</string>
+    <string name="exit">Exit</string>
+    <string name="title_activity_erase">ERASE</string>
+    <string name="add_manual">Add Manually</string>
+    <string name="add_web">Add from Web</string>
+
 </resources>

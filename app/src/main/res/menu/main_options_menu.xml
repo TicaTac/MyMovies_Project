@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/exit"
+        android:title="@string/exit"></item>
+    <item android:id="@+id/erase_all"
+        android:title="@string/erase_all"></item>
+</menu>
