@@ -3,10 +3,10 @@ package clm.mymovies;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.Gravity;
@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
@@ -137,7 +136,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("Main"," Edit/Update Movie");
-                Intent intent
+
+                int dbID=-1;
+//                int pos=lv.getPositionForView(v);
+
+                Toast.makeText(MainActivity.this,"Positing " ,Toast.LENGTH_SHORT).show();
+                /*
+                Cursor c=commands.getDbQuery();
+                c.moveToPosition(pos);
+                dbID=c.getInt(c.getColumnIndexOrThrow(myConstants.DB_ID));
+
+                Intent intent=new Intent(MainActivity.this,AddActivity.class);
+                intent.putExtra(myConstants.DB_ID,dbID);
+                startActivityForResult(intent,2);*/
+
             }
         });
 

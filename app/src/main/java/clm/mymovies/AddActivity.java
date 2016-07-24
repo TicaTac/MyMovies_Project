@@ -1,5 +1,7 @@
 package clm.mymovies;
 
+import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,11 +21,28 @@ public class AddActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        Log.d("DB ","Loading AddActivity");
         commands=new myCommands(AddActivity.this);
-
         nameTV=(EditText) findViewById(R.id.nameET);
         descTV=(EditText) findViewById(R.id.descriptionET);
+
+        // get Source intent -
+        // if dbID -1/-2 => new Item
+        //  dbID >=0 then edit SQL record
+        Intent intent=getIntent();
+        int dbID=intent.getIntExtra(myConstants.DB_ID,-2);
+
+        Log.d("DB ","Loading AddActivity dbID"+dbID);
+
+
+        if (dbID>=0) {
+            // load SQ: record
+            Cursor c= commands.getDbQuery(dbID);
+            if (c.moveToNext()) {
+                nameTV.setText(c.getString(c.getColumnIndexOrThrow(myConstants.DB_MOVIE_NAME)));
+                descTV.setText(c.getString(c.getColumnIndexOrThrow(myConstants.DB_MOVIE_DESC)));
+            }
+        }
+
 
 
         Button saveBTN=(Button) findViewById(R.id.saveBTN);
