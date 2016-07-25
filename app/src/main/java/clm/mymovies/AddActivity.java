@@ -1,5 +1,6 @@
 package clm.mymovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ public class AddActivity extends AppCompatActivity {
     EditText nameTV;
     EditText descTV;
     String url,name,desc;
+    int dbID;
+    myDbHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +31,8 @@ public class AddActivity extends AppCompatActivity {
         // if dbID -1/-2 => new Item
         //  dbID >=0 then edit SQL record
         Intent intent=getIntent();
-        int dbID=intent.getIntExtra(myConstants.DB_ID,-2);
-
+        dbID=intent.getIntExtra(myConstants.DB_ID,-2);
+        helper=new myDbHelper(this);
         Log.d("DB ","Loading AddActivity dbID"+dbID);
 
 
@@ -53,10 +56,18 @@ public class AddActivity extends AppCompatActivity {
 
                 name=nameTV.getText().toString();
                 desc=descTV.getText().toString();
-                url="";
+                url=null;
 
                 myMovie movie=new myMovie(name,desc,url);
-                commands.addDb(movie);
+                if (dbID>=0) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(myConstants.DB_MOVIE_NAME,name);
+                    cv.put(myConstants.DB_MOVIE_DESC,desc);
+                    cv.put(myConstants.DB_MOVIE_NAME,name);
+
+                    helper.getWritableDatabase().update(myConstants.DB_TABLE,cv,myConstants.DB_ID+"=?",new String[]{""+dbID});
+                }
+                else commands.addDb(movie);
                 finish();
 
             }
