@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by CLM on 7/24/2016.
@@ -32,7 +33,7 @@ public class myCommands {
     public Cursor getDbQuery(int dbID)
     {
         Log.d("DB ","Read DB ID "+dbID);
-        Cursor c=helper.getReadableDatabase().query(myConstants.DB_TABLE,null,null,null,null,null,null);
+        Cursor c=helper.getReadableDatabase().query(myConstants.DB_TABLE,null,myConstants.DB_ID+"=?",new String[]{""+dbID},null,null,null);
         return c;
     }
 
@@ -54,6 +55,9 @@ public class myCommands {
         Log.d("_DB",s);
     }
 
+    public void toaster(Context c,String s){
+        Toast.makeText(c,s,Toast.LENGTH_SHORT).show();
+    }
     public boolean deleteDb(int dbID)
     {
 

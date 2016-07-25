@@ -31,6 +31,15 @@ public class myDbHelper extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion<myConstants.DB_VERSION) {
+            Log.d("DbHelper-","UpgradeDB oldVersion:"+oldVersion+" newVersion:"+newVersion);
 
+            String alterQuery
+                    = "ALTER TABLE "
+                    + myConstants.DB_TABLE + " "
+                    + "ADD COLUMN" + " "
+                    + myConstants.DB_MOVIE_IMAGE + " BLOB";
+            db.execSQL(alterQuery);
+        }
     }
 }

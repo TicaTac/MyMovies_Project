@@ -33,7 +33,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Name"
                 android:id="@+id/nameTV"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="left"
                  />
 
             <TextView
@@ -42,7 +42,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Desc"
                 android:id="@+id/descTV"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="left|center_horizontal" />
         </LinearLayout>
 
     </LinearLayout>

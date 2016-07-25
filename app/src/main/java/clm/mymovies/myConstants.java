@@ -6,11 +6,13 @@ package clm.mymovies;
 public class myConstants {
     static String DB_NAME="mymovies.db";
     static String DB_TABLE="Movies";
-    static int DB_VERSION=1;
+    static int DB_VERSION=12;
     static String DB_ID="_id";
+
     static String DB_MOVIE_NAME="Name";
     static String DB_MOVIE_DESC="Description";
     static String DB_MOVIE_URL="LINK";
+    static String DB_MOVIE_IMAGE="Image";
 
 
     static int RESULT_EDIT=2;

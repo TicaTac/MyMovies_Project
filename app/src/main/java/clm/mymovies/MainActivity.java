@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     myCommands commands;
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                                 break;
 
                             case R.id.add_web:
-                                Toast.makeText(MainActivity.this,"add from web",Toast.LENGTH_SHORT).show();
+                                commands.toaster(MainActivity.this,"add from web");
                                 break;
                         }
                         return true;
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Main"," Edit/Update Movie");
                 int dbID=-1;
 
-                Toast.makeText(MainActivity.this,"Position "+position ,Toast.LENGTH_SHORT).show();
+                commands.toaster(MainActivity.this,"Position "+position );
 
                 dbID=getDbID(position);
 
@@ -120,13 +119,13 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.exit:
                 // finish();
-                Toast.makeText(MainActivity.this,"Exit",Toast.LENGTH_SHORT).show();
+                commands.toaster(MainActivity.this,"Exit");
                 refreshList();
                 break;
 
             case R.id.erase_all:
                 commands=new myCommands(this);
-                Toast.makeText(this,"Erasing all DB",Toast.LENGTH_SHORT);
+                commands.toaster(this,"Erasing all DB");
                 AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
                 dialog.setTitle("Are you sure you want to erase?");
                 dialog.setMessage("This will erase all the database");
@@ -176,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         Log.d("Main"," ListView - LongClick started Context Menu");
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        Toast.makeText(MainActivity.this,"ContextItemSelected "+info.position,Toast.LENGTH_SHORT).show();
+        commands.toaster(MainActivity.this,"ContextItemSelected "+info.position);
         int dbID=getDbID(info.position);
 
         switch (item.getItemId()){
@@ -219,7 +218,8 @@ public class MainActivity extends AppCompatActivity {
     public int getDbID(int lvPosition){
         Cursor c=commands.getDbQuery();
         c.moveToPosition(lvPosition);
-        return c.getInt(c.getColumnIndexOrThrow(myConstants.DB_ID));
+        int dbID=c.getInt(c.getColumnIndexOrThrow(myConstants.DB_ID));
+        return dbID;
 
     }
 }

@@ -10,6 +10,8 @@ public class myMovie {
     String name;//one line
     String body;// movie description. multiple lines
     String url; //
+    int Rating;
+    int Seen;
 
     public myMovie() {
         this.name=null;
