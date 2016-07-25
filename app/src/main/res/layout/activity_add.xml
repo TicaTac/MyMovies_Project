@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="clm.mymovies.AddActivity">
+    tools:context=".AddEditActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -73,12 +73,26 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ImageView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="200sp"
-        android:id="@+id/thumbIV"
-        android:src="@drawable/poster1_s"
-        android:layout_gravity="center_horizontal" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/thumbIV"
+            android:src="@drawable/poster1_s"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="0"
+            android:id="@+id/progressTV" />
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"

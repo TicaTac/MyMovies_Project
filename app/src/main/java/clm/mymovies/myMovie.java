@@ -1,5 +1,6 @@
 package clm.mymovies;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 /**
@@ -8,21 +9,22 @@ import android.util.Log;
 public class myMovie {
     int _id;
     String name;//one line
-    String body;// movie description. multiple lines
+    String description;// movie description. multiple lines
     String url; //
+    Bitmap image;
     int Rating;
     int Seen;
+    
 
-    public myMovie() {
-        this.name=null;
-        this.body=null;
-        this.name=null;
-    }
-
-    public myMovie(String name, String body, String url) {
-        Log.d("myMovie: ","Create Record "+name+body+url);
+    public myMovie(String name, String description, String url, Bitmap image) {
+        Log.d("myMovie: ","Create Record "+name+description+url);
         this.name = name;
-        this.body = body;
+        this.description = description;
         this.url = url;
+        this.image=image;
+        //Rating=0;
+        //Seen=0;
+        
+        
     }
 }

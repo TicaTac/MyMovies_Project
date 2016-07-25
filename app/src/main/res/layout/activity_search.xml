@@ -17,7 +17,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/searchET"
             android:layout_weight=".5"
-            android:hint="Movie to Seatch" />
+            android:hint="Movie to Seatch"
+            android:text="http://www.omdbapi.com/?s=batman"
+            android:singleLine="true" />
 
         <Button
             android:layout_width="wrap_content"
@@ -28,15 +30,28 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight=".5">
 
         <ListView
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:id="@+id/moviesOptionsLV" />
+            android:id="@+id/searchLV" />
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/scrollView2" >
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:ems="10"
+                android:id="@+id/debugTV" />
+        </ScrollView>
     </LinearLayout>
 
     <LinearLayout

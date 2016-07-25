@@ -21,7 +21,8 @@ public class myDbHelper extends SQLiteOpenHelper{
                 +myConstants.DB_ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"
                 +myConstants.DB_MOVIE_NAME+" TEXT , "
                 +myConstants.DB_MOVIE_DESC+" TEXT , "
-                +myConstants.DB_MOVIE_URL+" TEXT "
+                +myConstants.DB_MOVIE_URL +" TEXT , "
+                +myConstants.DB_MOVIE_IMAGE+" TEXT"
                 +");";
 
         Log.d("DB ","Create DB: "+createQuery);
@@ -38,7 +39,7 @@ public class myDbHelper extends SQLiteOpenHelper{
                     = "ALTER TABLE "
                     + myConstants.DB_TABLE + " "
                     + "ADD COLUMN" + " "
-                    + myConstants.DB_MOVIE_IMAGE + " BLOB";
+                    + myConstants.DB_MOVIE_IMAGE + " BLOB;";
             db.execSQL(alterQuery);
         }
     }

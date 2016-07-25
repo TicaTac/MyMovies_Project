@@ -15,7 +15,9 @@
         android:layout_height="189dp"
         android:id="@+id/moviesLV"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true" >
+
+    </ListView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/addFABTN"

@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 
 public class MainActivity extends AppCompatActivity {
     myCommands commands;
@@ -30,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Log.d("Main","Loading...");
         // todo link list to simple cursor adapter
         lv = (ListView) findViewById(R.id.moviesLV);
@@ -37,13 +37,12 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO: 7/24/2016 add movie records to DB
 
-        myMovie movie1= new myMovie("Movie1","Description1",null);
-        myMovie movie2= new myMovie("Movie2","Description2",null);
-        myMovie movie3= new myMovie("Movie3","Description3",null);
-
+      /*  myMovie movie1= new myMovie("Movie1","Description1",null, null);
+        myMovie movie2= new myMovie("Movie2","Description2",null, null);
+        myMovie movie3= new myMovie("Movie3","Description3",null, null);
         commands.addDb(movie1);
         commands.addDb(movie2);
-        commands.addDb(movie3);
+        commands.addDb(movie3);*/
 
         Log.d("Main"," getDB");
 
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /*Log.d("DB ","Main-Clicked Add Button");
-                Intent intent=new Intent(MainActivity.this,AddActivity.class);
+                Intent intent=new Intent(MainActivity.this,AddEditActivity.class);
                 startActivityForResult(intent,1);*/
                 PopupMenu popup=new PopupMenu(MainActivity.this, addfabBTN, Gravity.NO_GRAVITY);
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                         switch (item.getItemId()) {
                             case R.id.add_manual:
                                 Log.d("DB ","Main-Clicked Manual Add Button");
-                                Intent intent=new Intent(MainActivity.this,AddActivity.class);
+                                Intent intent=new Intent(MainActivity.this,AddEditActivity.class);
                                 startActivityForResult(intent,1);
                                 break;
 
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
                 dbID=getDbID(position);
 
-                Intent intent=new Intent(MainActivity.this,AddActivity.class);
+                Intent intent=new Intent(MainActivity.this,AddEditActivity.class);
                 intent.putExtra(myConstants.DB_ID,dbID);
                 startActivityForResult(intent,2);
             }
@@ -183,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Main"," Edit ListView Item "+info.position);
 
 
-                Intent intent=new Intent(MainActivity.this,AddActivity.class);
+                Intent intent=new Intent(MainActivity.this,AddEditActivity.class);
                 intent.putExtra(myConstants.DB_ID,dbID);
                 startActivityForResult(intent,myConstants.RESULT_EDIT);
 
@@ -204,11 +203,15 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Main"," Start Refresh ListView");
 
         c = commands.getDbQuery();
-        String[] from ={myConstants.DB_MOVIE_NAME,myConstants.DB_MOVIE_DESC};
-        int[] to ={R.id.nameTV,R.id.descTV};
+
+
+
+        String[] from ={myConstants.DB_MOVIE_NAME,myConstants.DB_MOVIE_DESC,myConstants.DB_MOVIE_IMAGE};
+        int[] to ={R.id.nameTV,R.id.descTV,R.id.thumbIV,};
 
         Log.d("Main"," Link To Adapter");
-        SimpleCursorAdapter adapter =new SimpleCursorAdapter(this,R.layout.single_movie_item,c,from,to);
+        //SimpleCursorAdapter adapter =new SimpleCursorAdapter(this,R.layout.single_movie_item,c,from,to);
+        myCursorAdapter adapter=new myCursorAdapter(MainActivity.this,c,0);
         lv.setAdapter(adapter);
 
         Log.d("Main","Ended Refresh ListView");
