@@ -1,30 +1,28 @@
 package clm.mymovies;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -34,27 +32,45 @@ public class SearchActivity extends AppCompatActivity {
     ListView searchLV;
     List searchResults;
     RequestTask getJson;
-    TextView urlTV;
+    EditText searchET;
     String urlQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
-        debugTV=(TextView) findViewById(R.id.debugTV);
-        searchLV=(ListView) findViewById(R.id.searchLV);
-        urlTV=(TextView) findViewById(R.id.urlTV);
-        urlQuery=urlTV.getText().toString();
-        searchResults=new ArrayList<>();
-
         getJson = new RequestTask();
+       // debugTV=(TextView) findViewById(R.id.debugTV);
+/*
 
 
+        searchResults=new ArrayList<>();
+        searchLV=(ListView) findViewById(R.id.searchLV);
 
-        refreshSearchList();
+*/
+
+        searchET=(EditText) findViewById(R.id.searchET);
+        searchET.setText("Batman");
+        searchET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                urlQuery=myConstants.OMDB_QUERY_PREFIX+searchET.getText().toString();
+                getJson.execute(urlQuery);
+                refreshSearchList();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         // on itemClick Listener -> load movie data to addEditActivity
-        searchLV.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+/*        searchLV.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
@@ -64,19 +80,24 @@ public class SearchActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
+        });*/
+        Button cancelBTN=(Button) findViewById(R.id.cancelSearchBTN) ;
+        cancelBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
         });
-
-        Button searchBTN= (Button) findViewById(R.id.searchBTN);
+  /*      Button searchBTN= (Button) findViewById(R.id.searchBTN);
         searchBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // get search list from EditText
-                urlQuery=urlTV.getText().toString();
+                urlQuery=searchET.getText().toString();
 
-                getJson.execute(urlQuery);
 
             }
-        });
+        });*/
 
 
     }
@@ -169,18 +190,18 @@ public class SearchActivity extends AppCompatActivity {
 
             }
 
-            debugTV.setText(result);
+         //   debugTV.setText(result);
         }
 
     }
 
     protected void refreshSearchList()
     {
-        String[] from={};
+    /*    String[] from={};
         int[] to={};
         SimpleAdapter adapter
                 = new SimpleAdapter( SearchActivity.this,searchResults,R.layout.single_movie_search_item,from,to);
 
-        searchLV.setAdapter(adapter);
+        searchLV.setAdapter(adapter);*/
     }
 }

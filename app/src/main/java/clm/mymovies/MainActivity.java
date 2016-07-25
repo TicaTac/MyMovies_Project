@@ -60,15 +60,19 @@ public class MainActivity extends AppCompatActivity {
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        Intent intent;
                         switch (item.getItemId()) {
                             case R.id.add_manual:
                                 Log.d("DB ","Main-Clicked Manual Add Button");
-                                Intent intent=new Intent(MainActivity.this,AddEditActivity.class);
+                                intent=new Intent(MainActivity.this,AddEditActivity.class);
                                 startActivityForResult(intent,1);
                                 break;
 
                             case R.id.add_web:
                                 commands.toaster(MainActivity.this,"add from web");
+                                intent=new Intent(MainActivity.this,SearchActivity.class);
+                                startActivityForResult(intent,1);
+
                                 break;
                         }
                         return true;

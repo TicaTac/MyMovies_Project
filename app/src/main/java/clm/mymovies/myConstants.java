@@ -17,5 +17,7 @@ public class myConstants {
 
     static int RESULT_EDIT=2;
 
+    static String OMDB_QUERY_PREFIX="http://www.omdbapi.com/?s=";
+
 
 }
