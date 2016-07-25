@@ -53,18 +53,12 @@ public class myCommands {
     {
         Log.d("_DB",s);
     }
-    public boolean deleteDb(myMovie movie)
+
+    public boolean deleteDb(int dbID)
     {
-        int dbID=movie._id;
-     /*   Cursor c= helper.getReadableDatabase().query(myConstants.DB_TABLE,null,myConstants.DB_ID,new String[]{""+dbID},null,null,null);
-        if (c.moveToNext()){
-            if (c.getString(c.getColumnIndexOrThrow(myConstants.DB_NAME)).equals(movie.name)&&
-                    ){
 
-            }
-        }*/
 
-       return (helper.getWritableDatabase().delete(myConstants.DB_TABLE,myConstants.DB_ID+"=?",new String[]{""+dbID})>0);
+        return (helper.getWritableDatabase().delete(myConstants.DB_TABLE,myConstants.DB_ID+"=?",new String[]{""+dbID})>0);
 
     }
 }

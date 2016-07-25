@@ -13,4 +13,7 @@ public class myConstants {
     static String DB_MOVIE_URL="LINK";
 
 
+    static int RESULT_EDIT=2;
+
+
 }

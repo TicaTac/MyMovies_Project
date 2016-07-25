@@ -9,11 +9,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
@@ -24,58 +26,6 @@ public class MainActivity extends AppCompatActivity {
     Cursor c;
     FloatingActionButton addfabBTN;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refreshList();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.exit:
-                // finish();
-                Toast.makeText(MainActivity.this,"Exit",Toast.LENGTH_SHORT).show();
-                refreshList();
-                break;
-
-            case R.id.erase_all:
-                commands=new myCommands(this);
-                Toast.makeText(this,"Erasing all DB",Toast.LENGTH_SHORT);
-                AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
-                dialog.setTitle("Are you sure you want to erase?");
-                dialog.setMessage("This will erase all the database");
-                //dialog.setIcon(R.drawable.icon);
-                dialog.setButton(DialogInterface.BUTTON_POSITIVE,"ok",new DialogInterface.OnClickListener(){
-                    @Override
-                    public void onClick(DialogInterface dialog,int which) {
-                        commands.clearDB();
-                        refreshList();
-                    }
-                });
-                dialog.setButton(DialogInterface.BUTTON_NEGATIVE,"cancel",new DialogInterface.OnClickListener()  {
-                    @Override
-                    public void onClick(DialogInterface dialog,int which) {
-                        refreshList();
-                    }
-                });
-
-                dialog.show();
-
-                break;
-        }
-
-
-            return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = new MenuInflater(MainActivity.this);
-        inflater.inflate(R.menu.main_options_menu,menu);
-
-        return true;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,33 +82,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        lv.setOnClickListener(new View.OnClickListener() {
+        registerForContextMenu(lv);
+
+
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("Main"," Edit/Update Movie");
-
                 int dbID=-1;
-//                int pos=lv.getPositionForView(v);
 
-                Toast.makeText(MainActivity.this,"Positing " ,Toast.LENGTH_SHORT).show();
-                /*
-                Cursor c=commands.getDbQuery();
-                c.moveToPosition(pos);
-                dbID=c.getInt(c.getColumnIndexOrThrow(myConstants.DB_ID));
+                Toast.makeText(MainActivity.this,"Position "+position ,Toast.LENGTH_SHORT).show();
+
+                dbID=getDbID(position);
 
                 Intent intent=new Intent(MainActivity.this,AddActivity.class);
                 intent.putExtra(myConstants.DB_ID,dbID);
-                startActivityForResult(intent,2);*/
-
-            }
-        });
-
-        lv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-
-
-                return true;
+                startActivityForResult(intent,2);
             }
         });
 
@@ -168,6 +108,97 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
         return super.onMenuOpened(featureId, menu);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshList();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.exit:
+                // finish();
+                Toast.makeText(MainActivity.this,"Exit",Toast.LENGTH_SHORT).show();
+                refreshList();
+                break;
+
+            case R.id.erase_all:
+                commands=new myCommands(this);
+                Toast.makeText(this,"Erasing all DB",Toast.LENGTH_SHORT);
+                AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
+                dialog.setTitle("Are you sure you want to erase?");
+                dialog.setMessage("This will erase all the database");
+                //dialog.setIcon(R.drawable.icon);
+
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE,"ok",new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog,int which) {
+                        commands.clearDB();
+                        refreshList();
+                    }
+                });
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE,"cancel",new DialogInterface.OnClickListener()  {
+                    @Override
+                    public void onClick(DialogInterface dialog,int which) {
+                        refreshList();
+                    }
+                });
+
+                dialog.show();
+
+                break;
+        }
+
+
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = new MenuInflater(MainActivity.this);
+        inflater.inflate(R.menu.main_options_menu,menu);
+
+        return true;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater inflater=new MenuInflater(MainActivity.this);
+        inflater.inflate(R.menu.main_listview_context_menu,menu);
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Log.d("Main"," ListView - LongClick started Context Menu");
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Toast.makeText(MainActivity.this,"ContextItemSelected "+info.position,Toast.LENGTH_SHORT).show();
+        int dbID=getDbID(info.position);
+
+        switch (item.getItemId()){
+            case R.id.edit_listview_item_MI:
+                Log.d("Main"," Edit ListView Item "+info.position);
+
+
+                Intent intent=new Intent(MainActivity.this,AddActivity.class);
+                intent.putExtra(myConstants.DB_ID,dbID);
+                startActivityForResult(intent,myConstants.RESULT_EDIT);
+
+                break;
+            case R.id.erase_listview_item_MI:
+
+                myCommands commands=new myCommands(MainActivity.this);
+                commands.deleteDb(dbID);
+                break;
+
+
+        }
+
+        return true;
     }
 
     public void refreshList(){
@@ -182,6 +213,13 @@ public class MainActivity extends AppCompatActivity {
         lv.setAdapter(adapter);
 
         Log.d("Main","Ended Refresh ListView");
+
+    }
+
+    public int getDbID(int lvPosition){
+        Cursor c=commands.getDbQuery();
+        c.moveToPosition(lvPosition);
+        return c.getInt(c.getColumnIndexOrThrow(myConstants.DB_ID));
 
     }
 }

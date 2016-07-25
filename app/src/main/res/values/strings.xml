@@ -5,5 +5,7 @@
     <string name="title_activity_erase">ERASE</string>
     <string name="add_manual">Add Manually</string>
     <string name="add_web">Add from Web</string>
+    <string name="edit">Edit Record</string>
+    <string name="eraseItem">Erase Record</string>
 
 </resources>
