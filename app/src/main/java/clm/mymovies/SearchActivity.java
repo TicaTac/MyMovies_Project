@@ -31,17 +31,18 @@ public class SearchActivity extends AppCompatActivity {
     TextView debugTV;
     ListView searchLV;
     List searchResults;
-    RequestTask getJson;
+    GetJSONTask getJson;
     EditText searchET;
     String urlQuery;
-
+///////////////////////////////////////////////// onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        getJson = new RequestTask();
-       // debugTV=(TextView) findViewById(R.id.debugTV);
-/*
+        getJson = new GetJSONTask();
+        debugTV=(TextView) findViewById(R.id.debugTV);
+        Log.d("Search","Load Activity");
+        /*
 
 
         searchResults=new ArrayList<>();
@@ -59,9 +60,8 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                urlQuery=myConstants.OMDB_QUERY_PREFIX+searchET.getText().toString();
-                getJson.execute(urlQuery);
-                refreshSearchList();
+                Log.d("Search","Query Text Change (ET)");
+                loadJsonQuery();
             }
 
             @Override
@@ -85,24 +85,76 @@ public class SearchActivity extends AppCompatActivity {
         cancelBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("Search","Cancel Activity");
                 finish();
             }
         });
-  /*      Button searchBTN= (Button) findViewById(R.id.searchBTN);
+        Button searchBTN= (Button) findViewById(R.id.searchBTN);
         searchBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // get search list from EditText
-                urlQuery=searchET.getText().toString();
-
+                Log.d("Search","GetJson For Query");
+                loadJsonQuery();
 
             }
-        });*/
+        });
 
 
     }
+////////////////////////////////////////////////////End onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+protected void refreshSearchList()
+{
+    /*    String[] from={};
+        int[] to={};
+        SimpleAdapter adapter
+                = new SimpleAdapter( SearchActivity.this,searchResults,R.layout.single_movie_search_item,from,to);
 
-    class RequestTask extends AsyncTask<String, String, String> {
+        searchLV.setAdapter(adapter);*/
+}
+    protected void parseJson (String result)
+    {
+        try {
+
+            //the main JSON object - initialize with string
+            JSONObject jsonObject= new JSONObject(result);
+
+            //extract data with getString, getInt getJsonObject - for inner objects or JSONArray- for inner arrays
+            String name= jsonObject.getString("Search");
+            JSONArray myArray= jsonObject.getJSONArray("Title");
+            Log.d("json", name);
+
+            for(int i=0; i<myArray.length(); i++)
+            {
+                //inner objects inside the array
+                JSONObject innerObj= myArray.getJSONObject(i);
+                String description= innerObj.getString("description");
+                Log.d("json", description);
+            }
+
+            JSONObject tempObject=   jsonObject.getJSONObject("main");
+            double  temp=   tempObject.getDouble("temp");
+            Log.d("json", ""+temp);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+        }
+
+        //   debugTV.setText(result);
+    }
+
+
+}
+
+    public void loadJsonQuery()
+    {
+        urlQuery=myConstants.OMDB_QUERY_PREFIX+searchET.getText().toString();
+        getJson.execute(urlQuery);
+        //   refreshSearchList();
+    }
+
+//////////////////////////////////
+    class GetJSONTask extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... uri) {
@@ -161,47 +213,13 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+
             //Do anything with response..
-
-            try {
-
-                //the main JSON object - initialize with string
-                JSONObject jsonObject= new JSONObject(result);
-
-                //extract data with getString, getInt getJsonObject - for inner objects or JSONArray- for inner arrays
-                String name= jsonObject.getString("Search");
-                JSONArray myArray= jsonObject.getJSONArray("Title");
-                Log.d("json", name);
-
-                for(int i=0; i<myArray.length(); i++)
-                {
-                    //inner objects inside the array
-                    JSONObject innerObj= myArray.getJSONObject(i);
-                    String description= innerObj.getString("description");
-                    Log.d("json", description);
-                }
-
-                JSONObject tempObject=   jsonObject.getJSONObject("main");
-                double  temp=   tempObject.getDouble("temp");
-                Log.d("json", ""+temp);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-
-            }
-
-         //   debugTV.setText(result);
-        }
+            parseJson(result);
+            refreshSearchList();
 
     }
 
-    protected void refreshSearchList()
-    {
-    /*    String[] from={};
-        int[] to={};
-        SimpleAdapter adapter
-                = new SimpleAdapter( SearchActivity.this,searchResults,R.layout.single_movie_search_item,from,to);
 
-        searchLV.setAdapter(adapter);*/
-    }
+
 }
