@@ -23,34 +23,31 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class SearchActivity extends AppCompatActivity {
     TextView debugTV;
     ListView searchLV;
-    List searchResults;
+    ArrayList<movieQuery> searchResults;
     GetJSONTask getJson;
     EditText searchET;
     String urlQuery;
-///////////////////////////////////////////////// onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+    ///////////////////////////////////////////////// onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         getJson = new GetJSONTask();
-        debugTV=(TextView) findViewById(R.id.debugTV);
-        Log.d("Search","Load Activity");
-        /*
+        debugTV = (TextView) findViewById(R.id.debugTV);
+        Log.d("Search", "Load Activity");
 
-
-        searchResults=new ArrayList<>();
+        searchResults= new ArrayList<>();
         searchLV=(ListView) findViewById(R.id.searchLV);
 
-*/
-
-        searchET=(EditText) findViewById(R.id.searchET);
+        searchET = (EditText) findViewById(R.id.searchET);
         searchET.setText("Batman");
         searchET.addTextChangedListener(new TextWatcher() {
             @Override
@@ -60,7 +57,7 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("Search","Query Text Change (ET)");
+                Log.d("Search", "Query Text Change (ET)");
                 loadJsonQuery();
             }
 
@@ -81,19 +78,21 @@ public class SearchActivity extends AppCompatActivity {
 
             }
         });*/
-        Button cancelBTN=(Button) findViewById(R.id.cancelSearchBTN) ;
+        // Cancel Button
+        Button cancelBTN = (Button) findViewById(R.id.cancelSearchBTN);
         cancelBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Search","Cancel Activity");
+                Log.d("Search", "Cancel Activity");
                 finish();
             }
         });
-        Button searchBTN= (Button) findViewById(R.id.searchBTN);
+        // Search Button
+        Button searchBTN = (Button) findViewById(R.id.searchBTN);
         searchBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Search","GetJson For Query");
+                Log.d("Search", "GetJson For Query");
                 loadJsonQuery();
 
             }
@@ -101,59 +100,55 @@ public class SearchActivity extends AppCompatActivity {
 
 
     }
-////////////////////////////////////////////////////End onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-protected void refreshSearchList()
-{
+
+    ////////////////////////////////////////////////////End onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    protected void refreshSearchList() {
     /*    String[] from={};
         int[] to={};
         SimpleAdapter adapter
                 = new SimpleAdapter( SearchActivity.this,searchResults,R.layout.single_movie_search_item,from,to);
 
         searchLV.setAdapter(adapter);*/
-}
-    protected void parseJson (String result)
-    {
+    }
+    /////////////////////////////////// PARSE JSON ///////////////////////////////////////////
+    protected void parseJson(String result) {
         try {
 
             //the main JSON object - initialize with string
-            JSONObject jsonObject= new JSONObject(result);
+            JSONObject jsonObject = new JSONObject(result);
 
             //extract data with getString, getInt getJsonObject - for inner objects or JSONArray- for inner arrays
-            String name= jsonObject.getString("Search");
-            JSONArray myArray= jsonObject.getJSONArray("Title");
+            String name = jsonObject.getString("Search");
+            JSONArray myArray = jsonObject.getJSONArray("Title");
             Log.d("json", name);
 
-            for(int i=0; i<myArray.length(); i++)
-            {
+            for (int i = 0; i < myArray.length(); i++) {
                 //inner objects inside the array
-                JSONObject innerObj= myArray.getJSONObject(i);
-                String description= innerObj.getString("description");
+                JSONObject innerObj = myArray.getJSONObject(i);
+                String description = innerObj.getString("description");
                 Log.d("json", description);
             }
 
-            JSONObject tempObject=   jsonObject.getJSONObject("main");
-            double  temp=   tempObject.getDouble("temp");
-            Log.d("json", ""+temp);
+            JSONObject tempObject = jsonObject.getJSONObject("main");
+            double temp = tempObject.getDouble("temp");
+            Log.d("json", "" + temp);
 
         } catch (JSONException e) {
             e.printStackTrace();
 
         }
 
-        //   debugTV.setText(result);
+           debugTV.setText(result);
     }
+    /////////////////////////////////////// END OF PARSE JSON /////////////////////////////////////
 
-
-}
-
-    public void loadJsonQuery()
-    {
-        urlQuery=myConstants.OMDB_QUERY_PREFIX+searchET.getText().toString();
+    public void loadJsonQuery() {
+        urlQuery = myConstants.OMDB_QUERY_PREFIX + searchET.getText().toString();
         getJson.execute(urlQuery);
         //   refreshSearchList();
     }
 
-//////////////////////////////////
+    ////////////////////////////////// GetJSONTask ////////////////////////////////////////////////////
     class GetJSONTask extends AsyncTask<String, String, String> {
 
         @Override
@@ -163,26 +158,25 @@ protected void refreshSearchList()
             StringBuilder response = new StringBuilder();
             HttpURLConnection connection = null;
             URL url;
-            int lineCount=0;
+            int lineCount = 0;
             try {
                 url = new URL(uri[0]);
 
                 connection = (HttpURLConnection) url.openConnection();
-                if(connection.getResponseCode() == HttpsURLConnection.HTTP_OK){
+                if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
                     connection.getResponseCode();
                     input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
                     //go over the input, line by line
-                    String line="";
-                    while ((line=input.readLine())!=null){
+                    String line = "";
+                    while ((line = input.readLine()) != null) {
                         //append it to a StringBuilder to hold the
                         //resulting string
-                        response.append(line+"\n");
-                     //   lineCount++;
+                        response.append(line + "\n");
+                        //   lineCount++;
                     }
-                }
-                else {
-                   // See documentation for more info on response handling
+                } else {
+                    // See documentation for more info on response handling
                 }
             } catch (ProtocolException e) {
                 e.printStackTrace();
@@ -192,7 +186,7 @@ protected void refreshSearchList()
                 e.printStackTrace();
 
             } finally {
-                if (input!=null){
+                if (input != null) {
                     try {
                         //must close the reader
                         input.close();
@@ -201,7 +195,7 @@ protected void refreshSearchList()
                     }
                 }
 
-                if(connection!=null){
+                if (connection != null) {
                     //must disconnect the connection
                     connection.disconnect();
                 }
@@ -218,8 +212,8 @@ protected void refreshSearchList()
             parseJson(result);
             refreshSearchList();
 
+        }
+
+
     }
-
-
-
 }

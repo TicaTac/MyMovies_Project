@@ -30,7 +30,7 @@
         android:layout_weight=".5">
 
         <ListView
-            android:layout_width="250dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:id="@+id/searchLV" />
 
@@ -44,7 +44,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:ems="10"
-                android:id="@+id/debugTV" />
+                android:id="@+id/debugTV"
+                android:textSize="12sp" />
         </ScrollView>
     </LinearLayout>
 
