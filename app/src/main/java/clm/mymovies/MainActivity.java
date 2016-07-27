@@ -195,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
                 myCommands commands=new myCommands(MainActivity.this);
                 commands.deleteDb(dbID);
+                refreshList();
                 break;
 
 

@@ -51,7 +51,7 @@ public class AddEditActivity extends AppCompatActivity {
         iv = (ImageView) findViewById(R.id.thumbIV);
       //  progressTV = (TextView) findViewById(R.id.progressTV);
 
-        commands.toaster(this, "dbID" + dbID);
+        // commands.toaster(this, "dbID " + dbID);
 
         if (imdbID != null) {
             String url = myConstants.OMDB_ITEM_IMDB_QUERY + imdbID;
@@ -80,6 +80,7 @@ public class AddEditActivity extends AppCompatActivity {
                 name = nameET.getText().toString();
                 desc = descET.getText().toString();
                 url = null;
+//                image=
 
                 if (dbID >= 0) {
                     myMovieDB movie = new myMovieDB(name, desc, url, image);
