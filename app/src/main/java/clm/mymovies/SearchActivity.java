@@ -209,7 +209,7 @@ public class SearchActivity extends AppCompatActivity {
 
         @Override
         protected void onProgressUpdate(String... values) {
-
+                Log.d("GetJsonTask"," Progress Update"+values[0]);
 
         }
 

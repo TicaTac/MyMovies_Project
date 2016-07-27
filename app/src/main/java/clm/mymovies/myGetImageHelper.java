@@ -5,8 +5,6 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -17,6 +15,11 @@ import java.net.URL;
  */
 public class myGetImageHelper extends AsyncTask<String, String, Bitmap> {
     Bitmap image;
+
+    @Override
+    protected void onProgressUpdate(String... values) {
+        Log.d("myGetImageHelper"," Progress Update"+values[0]);
+    }
 
     @Override
     protected void onPostExecute(Bitmap bmp) {

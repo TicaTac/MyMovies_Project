@@ -48,7 +48,7 @@ public class myCommands {
         cv.put(myConstants.DB_MOVIE_NAME,movie.name);
         cv.put(myConstants.DB_MOVIE_DESC,movie.description);
         cv.put(myConstants.DB_MOVIE_URL,movie.url);
-        cv.put(myConstants.DB_MOVIE_IMAGE,encodeToBase64(movie.image, Bitmap.CompressFormat.PNG,100));
+        if (movie.image!=null) cv.put(myConstants.DB_MOVIE_IMAGE,encodeToBase64(movie.image, Bitmap.CompressFormat.PNG,100));
 
         Log.d("DB ","Add :"+movie.name);
 

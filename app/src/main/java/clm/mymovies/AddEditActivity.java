@@ -13,11 +13,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class AddEditActivity extends AppCompatActivity {
     myCommands commands;
@@ -52,7 +49,7 @@ public class AddEditActivity extends AppCompatActivity {
         nameET = (EditText) findViewById(R.id.nameET);
         descET = (EditText) findViewById(R.id.descriptionET);
         iv = (ImageView) findViewById(R.id.thumbIV);
-        progressTV = (TextView) findViewById(R.id.progressTV);
+      //  progressTV = (TextView) findViewById(R.id.progressTV);
 
         commands.toaster(this, "dbID" + dbID);
 
