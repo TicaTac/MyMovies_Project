@@ -14,6 +14,7 @@ public class myMovieDB {
     Bitmap image;
     int Rating;
     int Seen;
+    String omdbID;
     
 
     public myMovieDB(String name, String description, String url, Bitmap image) {

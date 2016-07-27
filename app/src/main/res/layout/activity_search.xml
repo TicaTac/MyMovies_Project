@@ -24,7 +24,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight=".5">
@@ -34,20 +34,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/searchLV" />
 
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/scrollView2"
-            android:visibility="gone">
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:ems="10"
-                android:id="@+id/debugTV"
-                android:textSize="12sp" />
-        </ScrollView>
     </LinearLayout>
 
     <LinearLayout

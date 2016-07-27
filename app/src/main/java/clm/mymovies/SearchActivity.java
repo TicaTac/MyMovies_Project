@@ -1,5 +1,7 @@
 package clm.mymovies;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,26 +9,20 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
+import java.util.concurrent.ExecutionException;
 
 public class SearchActivity extends AppCompatActivity {
     TextView debugTV;
@@ -36,20 +32,41 @@ public class SearchActivity extends AppCompatActivity {
     GetJSONTask getJson;
     EditText searchET;
     String urlQuery;
+    myGetImageHelper imageHelper;
 
     ///////////////////////////////////////////////// onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        getJson = new GetJSONTask();
-        debugTV = (TextView) findViewById(R.id.debugTV);
         Log.d("Search", "Load Activity");
 
         searchResults= new ArrayList<>();
         searchResultsTitles= new ArrayList<>();
 
         searchLV=(ListView) findViewById(R.id.searchLV);
+        searchLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(SearchActivity.this,"Selected"+position,Toast.LENGTH_SHORT);
+                String imdbID;
+                imdbID=searchResults.get(position).imdbID;
+                Intent intent = new Intent(SearchActivity.this,AddEditActivity.class);
+                intent.putExtra(myConstants.DB_IMDB,imdbID);
+                intent.putExtra(myConstants.DB_ID,-2);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+       /* searchLV.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Toast.makeText(SearchActivity.this,"",Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });*/
 
         searchET = (EditText) findViewById(R.id.searchET);
         searchET.setText("Batman");
@@ -98,6 +115,7 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("Search", "GetJson For Query");
                 loadJsonQuery();
+                refreshSearchList();
 
             }
         });
@@ -106,17 +124,27 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     ////////////////////////////////////////////////////End onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    public void loadJsonQuery() {
+        urlQuery = myConstants.OMDB_QUERY_PREFIX + searchET.getText().toString()+"*";
+        getJson= new GetJSONTask();
+        getJson.execute(urlQuery);
+
+
+    }
+
     protected void refreshSearchList() {
 
 
         mySearchAdapter adapter
                 = new mySearchAdapter( SearchActivity.this ,R.id.searchMovieNameTV,searchResults);
-
+        adapter.notifyDataSetChanged();
         searchLV.setAdapter(adapter);
+
+
 
     }
     /////////////////////////////////// PARSE JSON ///////////////////////////////////////////
-    protected ArrayList<myMovieQuery> parseJson(String result) {
+    protected ArrayList<myMovieQuery> parseJsonForMovieQuery(String result) {
         ArrayList<myMovieQuery> queryList=new ArrayList<>();
 
         try {
@@ -132,14 +160,21 @@ public class SearchActivity extends AppCompatActivity {
                 JSONObject tempObj = myArray.getJSONObject(i);
                 // parse the inside of the object to a new myMovieQuery
                 // todo create movie
-
+                imageHelper=new myGetImageHelper();
+                imageHelper.execute(tempObj.getString("Poster"));
+                // TODO: 7/27/2016  if poster is null 
+                Bitmap bmp=   imageHelper.get();
+               // Log.d("ParseJson","imageHelper.get :"+bmp.toString());
                 myMovieQuery movie= new myMovieQuery(
                             tempObj.getString("Title"),
-                            tempObj.getInt("Year"),
+                            tempObj.getString("Year"),
                             tempObj.getString("imdbID"),
                             tempObj.getString("Type"),
-                            tempObj.getString("Poster") );
+                            tempObj.getString("Poster"),
+                            bmp);
+                Log.d("ParseJson","imageHelper.get :"+imageHelper.toString());
                 queryList.add(movie);
+
 
             }
 
@@ -148,73 +183,34 @@ public class SearchActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
 
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
 
-         //  debugTV.setText(result);
+        //  debugTV.setText(result);
         return queryList;
     }
     /////////////////////////////////////// END OF PARSE JSON /////////////////////////////////////
 
-    public void loadJsonQuery() {
-        urlQuery = myConstants.OMDB_QUERY_PREFIX + searchET.getText().toString();
-        getJson.execute(urlQuery);
-        //   refreshSearchList();
-    }
+
 
     ////////////////////////////////// GetJSONTask ////////////////////////////////////////////////////
     class GetJSONTask extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... uri) {
+            myGetJsonHelper getJson=new myGetJsonHelper();
+            String result = getJson.getJsonQuery(uri[0]);
 
-            BufferedReader input = null;
-            StringBuilder response = new StringBuilder();
-            HttpURLConnection connection = null;
-            URL url;
-            int lineCount = 0;
-            try {
-                url = new URL(uri[0]);
+            return result;
+        }
 
-                connection = (HttpURLConnection) url.openConnection();
-                if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                    connection.getResponseCode();
-                    input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        @Override
+        protected void onProgressUpdate(String... values) {
 
-                    //go over the input, line by line
-                    String line = "";
-                    while ((line = input.readLine()) != null) {
-                        //append it to a StringBuilder to hold the
-                        //resulting string
-                        response.append(line + "\n");
-                        //   lineCount++;
-                    }
-                } else {
-                    // See documentation for more info on response handling
-                }
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
 
-            } finally {
-                if (input != null) {
-                    try {
-                        //must close the reader
-                        input.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (connection != null) {
-                    //must disconnect the connection
-                    connection.disconnect();
-                }
-
-            }
-            return String.valueOf(response);
         }
 
         @Override
@@ -224,9 +220,10 @@ public class SearchActivity extends AppCompatActivity {
             stringBuild.append();//{"Response":"False","Error":"Movie not found!"}
           */
             if (!result.equals(" {\"Response\":\"False\",\"Error\":\"Movie not found!\"} ")) {
-                searchResults = parseJson(result);
-                refreshSearchList();
+                searchResults = parseJsonForMovieQuery(result);
+
             }
+            refreshSearchList();
         }
 
 

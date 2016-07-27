@@ -3,7 +3,6 @@ package clm.mymovies;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,21 +13,23 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class AddEditActivity extends AppCompatActivity {
     myCommands commands;
     EditText nameET;
     EditText descET;
     TextView progressTV;
-    String url,name,desc;
+    String url, name, desc;
     int dbID;
+    String imdbID;
     myDbHelper helper;
+    myGetJsonHelper jsonHelper;
+    myGetImageHelper imageHelper;
     ImageView iv;
     Bitmap image;
 
@@ -36,26 +37,33 @@ public class AddEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
-        image=null;
-        commands=new myCommands(AddEditActivity.this);
-        Intent intent=getIntent();
-        dbID=intent.getIntExtra(myConstants.DB_ID,-2);
-        helper=new myDbHelper(this);
-        Log.d("DB ","Loading AddEditActivity dbID"+dbID);
+        image = null;
+        commands = new myCommands(AddEditActivity.this);
 
-        nameET=(EditText) findViewById(R.id.nameET);
-        descET=(EditText) findViewById(R.id.descriptionET);
-        iv=(ImageView) findViewById(R.id.thumbIV);
-        progressTV=(TextView) findViewById(R.id.progressTV);
+        Intent intent = getIntent();
+        dbID = intent.getIntExtra(myConstants.DB_ID, -2);
+        imdbID = intent.getStringExtra(myConstants.DB_IMDB);
 
-        commands.toaster(this,"dbID"+dbID);
+        helper = new myDbHelper(this);
+        Log.d("DB ", "Loading AddEditActivity dbID" + dbID);
+        jsonHelper = new myGetJsonHelper();
+        imageHelper = new myGetImageHelper();
 
-        // get Source intent -
-        // if dbID -1/-2 => new Item
-        //  dbID >=0 then edit SQL record
-        if (dbID>=0) {
-            // load SQ: record
-            Cursor c= commands.getDbQuery(dbID);
+        nameET = (EditText) findViewById(R.id.nameET);
+        descET = (EditText) findViewById(R.id.descriptionET);
+        iv = (ImageView) findViewById(R.id.thumbIV);
+        progressTV = (TextView) findViewById(R.id.progressTV);
+
+        commands.toaster(this, "dbID" + dbID);
+
+        if (imdbID != null) {
+            String url = myConstants.OMDB_ITEM_IMDB_QUERY + imdbID;
+            GetJSONTask getJsonWithIMDB = new GetJSONTask();
+            getJsonWithIMDB.execute(url);
+        } else if (dbID >= 0) {
+
+            // load SQL record
+            Cursor c = commands.getDbQuery(dbID);
             if (c.moveToNext()) {
                 nameET.setText(c.getString(c.getColumnIndexOrThrow(myConstants.DB_MOVIE_NAME)));
                 descET.setText(c.getString(c.getColumnIndexOrThrow(myConstants.DB_MOVIE_DESC)));
@@ -65,24 +73,22 @@ public class AddEditActivity extends AppCompatActivity {
         }
 
 
-
-        Button saveBTN=(Button) findViewById(R.id.saveBTN);
+        Button saveBTN = (Button) findViewById(R.id.saveBTN);
         saveBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("AddEditActivity"," Add new Record to DB");
+                Log.d("AddEditActivity", " Add new Record to DB");
                 // TODO: 7/24/2016 add update Record in DB
 
-                name=nameET.getText().toString();
-                desc=descET.getText().toString();
-                url=null;
+                name = nameET.getText().toString();
+                desc = descET.getText().toString();
+                url = null;
 
-                if (dbID>=0) {
-                    myMovieDB movie=new myMovieDB(name,desc,url, image);
+                if (dbID >= 0) {
+                    myMovieDB movie = new myMovieDB(name, desc, url, image);
                     commands.updateDb(movie);
-                }
-                else {
-                    myMovieDB movie=new myMovieDB(name,desc,url, image);
+                } else {
+                    myMovieDB movie = new myMovieDB(name, desc, url, image);
                     commands.addDb(movie);
                 }
                 finish();
@@ -90,7 +96,7 @@ public class AddEditActivity extends AppCompatActivity {
             }
         });
 
-        Button cancelBTN= (Button) findViewById(R.id.cancelBTN);
+        Button cancelBTN = (Button) findViewById(R.id.cancelBTN);
         cancelBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,10 +110,10 @@ public class AddEditActivity extends AppCompatActivity {
         showBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText urlET=(EditText) findViewById(R.id.urlET) ;
+                EditText urlET = (EditText) findViewById(R.id.urlET);
                 String url = urlET.getText().toString();
 
-                DownloadImage loadImage = new DownloadImage(iv,null);
+                DownloadImage loadImage = new DownloadImage(iv, null);
 
                 loadImage.execute(url);
 
@@ -118,7 +124,38 @@ public class AddEditActivity extends AppCompatActivity {
     }
 
 
-    public class DownloadImage extends AsyncTask<String,Integer,Bitmap>{
+    /////////////////////////////////// PARSE JSON ///////////////////////////////////////////
+    protected void parseJsonForMovieRecord(String result) {
+
+        try {
+
+            //the main JSON object - initialize with string
+            JSONObject jsonResult = new JSONObject(result);
+
+            String title = jsonResult.getString("Title");
+            String plot = jsonResult.getString("Plot");
+            String poster = jsonResult.getString("Poster");
+            DownloadImage getImageTask = new DownloadImage(iv,"");
+            getImageTask.execute(poster);
+
+//            Bitmap image = imageHelper.getBitmap(poster);
+            nameET.setText(title);
+            descET.setText(plot);
+//            iv.setImageBitmap(image);
+
+            //imageHelper.saveFile(image);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+        }
+
+        //  debugTV.setText(result);
+    }
+    /////////////////////////////////////// END OF PARSE JSON /////////////////////////////////////
+
+    public class DownloadImage extends AsyncTask<String, Integer, Bitmap> {
         ImageView imageView;
         String saveFileLocation;
 
@@ -129,59 +166,9 @@ public class AddEditActivity extends AppCompatActivity {
 
         @Override
         protected Bitmap doInBackground(String... params) {
-            return getImage(params);
-        }
-
-        private Bitmap getImage(String... params){
-            Bitmap bmp=null;
-            // start connection
-            /*BufferedReader input=null;
-            HttpURLConnection connection=null;
-            BufferedInputStream bis;*/
-            try {
-                bmp = BitmapFactory.decodeStream((InputStream)new URL(params[0]).getContent());
-/*
-                URL url=new URL(params[0]);
-                connection=(HttpURLConnection) url.openConnection();
-                if (connection.getResponseCode()!=HttpURLConnection.HTTP_OK) {
-                    // connection not good return
-                }
-                //get a buffer reader to read the data stream as characters(letters)
-                //in a buffered way.
-
-                bis=new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                //decode the stream
-
-                bmp= BitmapFactory.decodeStream(input);
-                while ((line=input.readLine())!=null){
-                    //append it to a StringBuilder to hold the
-                    //resulting string
-                    response.append(line+"\n");
-                }*/
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e){
-                e.printStackTrace();
-            } catch (RuntimeException e){
-                e.printStackTrace();
-            } finally{
-
-            };
-
+            myGetImageHelper getImage = new myGetImageHelper();
+            Bitmap bmp = getImage.getBitmap(params);
             return bmp;
-        }
-        protected  void saveFile(Bitmap original)
-        {
-
-            //Bitmap original = BitmapFactory.decodeStream(getAssets().open("1024x768.jpg"));
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            original.compress(Bitmap.CompressFormat.PNG, 100, out);
-            Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
-
-            Log.e("Original   dimensions", original.getWidth()+" "+original.getHeight());
-            Log.e("Compressed dimensions", decoded.getWidth()+" "+decoded.getHeight());
 
         }
 
@@ -189,18 +176,45 @@ public class AddEditActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
-            progressTV.setText(""+values[0]);
-            Log.d("Read BMP","Progress "+values[0]);
+            progressTV.setText("" + values[0]);
+            Log.d("Read BMP", "Progress " + values[0]);
         }
 
         @Override
         protected void onPostExecute(Bitmap bmp) {
             super.onPostExecute(bmp);
-            image=bmp;
+            myGetImageHelper getImage = new myGetImageHelper();
+            image = bmp;
             imageView.setImageBitmap(image);
 
-            saveFile(bmp);
+            getImage.saveFile(bmp);
+
 
         }
     }
+    ////////////////////////////////////////// Async Task ---- Get Json ///////////////////////////
+
+    class GetJSONTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... uri) {
+            myGetJsonHelper getJson = new myGetJsonHelper();
+            String result = getJson.getJsonQuery(uri[0]);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+
+            if (!result.equals(" {\"Response\":\"False\",\"Error\":\"Movie not found!\"} ")) {
+                parseJsonForMovieRecord(result);
+
+            }
+        }
+
+
+    }
 }
+

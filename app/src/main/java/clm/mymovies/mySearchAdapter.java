@@ -1,6 +1,7 @@
 package clm.mymovies;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ public class mySearchAdapter extends ArrayAdapter<myMovieQuery> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v=convertView;
+
         if (convertView == null)
         {
             LayoutInflater inflater = LayoutInflater.from(c);
@@ -34,21 +36,21 @@ public class mySearchAdapter extends ArrayAdapter<myMovieQuery> {
 
 
         TextView searchMovieNameTV= (TextView) v.findViewById(R.id.searchMovieNameTV);
-        ImageView searchItemIV= (ImageView) v.findViewById(R.id.searchItemIV);
+        ImageView searchItemImageIV = (ImageView) v.findViewById(R.id.searchItemIV);
 
         myMovieQuery tempMovieQuery = movieQueryList.get(position);
 
         searchMovieNameTV.setText(tempMovieQuery.Title);
 
-        //ImageView capImage= (ImageView) v.findViewById(R.id.imageView);
-        //capImage.setImageResource(tempCapsule.pic);
+        Log.d("Adapter","SetImage : "+tempMovieQuery.Title);
 
-
-
-
-
+        if (tempMovieQuery.image!=null) {
+            searchItemImageIV.setImageBitmap(tempMovieQuery.image);
+        }
 
 
         return v;
     }
+
+
 }
