@@ -42,7 +42,7 @@ public class myCommands {
         return c;
     }
 
-    public void addDb(myMovie movie)
+    public void addDb(myMovieDB movie)
     {
         ContentValues cv=new ContentValues();
         cv.put(myConstants.DB_MOVIE_NAME,movie.name);
@@ -55,7 +55,7 @@ public class myCommands {
         helper.getWritableDatabase().insert(myConstants.DB_TABLE,null,cv);
     }
 
-    public void updateDb(myMovie movie)
+    public void updateDb(myMovieDB movie)
     {
 
         if (movie._id>=0) {

@@ -24,13 +24,15 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class SearchActivity extends AppCompatActivity {
     TextView debugTV;
     ListView searchLV;
-    ArrayList<movieQuery> searchResults;
+    ArrayList<myMovieQuery> searchResults;
+    List<String> searchResultsTitles;
     GetJSONTask getJson;
     EditText searchET;
     String urlQuery;
@@ -45,6 +47,8 @@ public class SearchActivity extends AppCompatActivity {
         Log.d("Search", "Load Activity");
 
         searchResults= new ArrayList<>();
+        searchResultsTitles= new ArrayList<>();
+
         searchLV=(ListView) findViewById(R.id.searchLV);
 
         searchET = (EditText) findViewById(R.id.searchET);
@@ -103,42 +107,51 @@ public class SearchActivity extends AppCompatActivity {
 
     ////////////////////////////////////////////////////End onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     protected void refreshSearchList() {
-    /*    String[] from={};
-        int[] to={};
-        SimpleAdapter adapter
-                = new SimpleAdapter( SearchActivity.this,searchResults,R.layout.single_movie_search_item,from,to);
 
-        searchLV.setAdapter(adapter);*/
+
+        mySearchAdapter adapter
+                = new mySearchAdapter( SearchActivity.this ,R.id.searchMovieNameTV,searchResults);
+
+        searchLV.setAdapter(adapter);
+
     }
     /////////////////////////////////// PARSE JSON ///////////////////////////////////////////
-    protected void parseJson(String result) {
+    protected ArrayList<myMovieQuery> parseJson(String result) {
+        ArrayList<myMovieQuery> queryList=new ArrayList<>();
+
         try {
 
             //the main JSON object - initialize with string
-            JSONObject jsonObject = new JSONObject(result);
+            JSONObject jsonResult = new JSONObject(result);
 
             //extract data with getString, getInt getJsonObject - for inner objects or JSONArray- for inner arrays
-            String name = jsonObject.getString("Search");
-            JSONArray myArray = jsonObject.getJSONArray("Title");
-            Log.d("json", name);
+            JSONArray myArray = jsonResult.getJSONArray("Search");
 
             for (int i = 0; i < myArray.length(); i++) {
-                //inner objects inside the array
-                JSONObject innerObj = myArray.getJSONObject(i);
-                String description = innerObj.getString("description");
-                Log.d("json", description);
+                //get temp inner object [i] inside the array
+                JSONObject tempObj = myArray.getJSONObject(i);
+                // parse the inside of the object to a new myMovieQuery
+                // todo create movie
+
+                myMovieQuery movie= new myMovieQuery(
+                            tempObj.getString("Title"),
+                            tempObj.getInt("Year"),
+                            tempObj.getString("imdbID"),
+                            tempObj.getString("Type"),
+                            tempObj.getString("Poster") );
+                queryList.add(movie);
+
             }
 
-            JSONObject tempObject = jsonObject.getJSONObject("main");
-            double temp = tempObject.getDouble("temp");
-            Log.d("json", "" + temp);
+
 
         } catch (JSONException e) {
             e.printStackTrace();
 
         }
 
-           debugTV.setText(result);
+         //  debugTV.setText(result);
+        return queryList;
     }
     /////////////////////////////////////// END OF PARSE JSON /////////////////////////////////////
 
@@ -207,11 +220,13 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-
-            //Do anything with response..
-            parseJson(result);
-            refreshSearchList();
-
+        /*    StringBuilder stringBuild = new StringBuilder();
+            stringBuild.append();//{"Response":"False","Error":"Movie not found!"}
+          */
+            if (!result.equals(" {\"Response\":\"False\",\"Error\":\"Movie not found!\"} ")) {
+                searchResults = parseJson(result);
+                refreshSearchList();
+            }
         }
 
 

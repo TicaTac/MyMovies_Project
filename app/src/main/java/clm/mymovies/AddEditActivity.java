@@ -78,11 +78,11 @@ public class AddEditActivity extends AppCompatActivity {
                 url=null;
 
                 if (dbID>=0) {
-                    myMovie movie=new myMovie(name,desc,url, image);
+                    myMovieDB movie=new myMovieDB(name,desc,url, image);
                     commands.updateDb(movie);
                 }
                 else {
-                    myMovie movie=new myMovie(name,desc,url, image);
+                    myMovieDB movie=new myMovieDB(name,desc,url, image);
                     commands.addDb(movie);
                 }
                 finish();

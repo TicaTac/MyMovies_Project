@@ -6,7 +6,7 @@ import android.util.Log;
 /**
  * Created by CLM on 7/24/2016.
  */
-public class myMovie {
+public class myMovieDB {
     int _id;
     String name;//one line
     String description;// movie description. multiple lines
@@ -16,8 +16,8 @@ public class myMovie {
     int Seen;
     
 
-    public myMovie(String name, String description, String url, Bitmap image) {
-        Log.d("myMovie: ","Create Record "+name+description+url);
+    public myMovieDB(String name, String description, String url, Bitmap image) {
+        Log.d("myMovieDB: ","Create Record "+name+description+url);
         this.name = name;
         this.description = description;
         this.url = url;

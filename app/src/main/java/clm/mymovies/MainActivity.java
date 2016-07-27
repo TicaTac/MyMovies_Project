@@ -37,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO: 7/24/2016 add movie records to DB
 
-      /*  myMovie movie1= new myMovie("Movie1","Description1",null, null);
-        myMovie movie2= new myMovie("Movie2","Description2",null, null);
-        myMovie movie3= new myMovie("Movie3","Description3",null, null);
+      /*  myMovieDB movie1= new myMovieDB("Movie1","Description1",null, null);
+        myMovieDB movie2= new myMovieDB("Movie2","Description2",null, null);
+        myMovieDB movie3= new myMovieDB("Movie3","Description3",null, null);
         commands.addDb(movie1);
         commands.addDb(movie2);
         commands.addDb(movie3);*/

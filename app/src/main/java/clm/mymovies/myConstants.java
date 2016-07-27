@@ -19,5 +19,8 @@ public class myConstants {
 
     static String OMDB_QUERY_PREFIX="http://www.omdbapi.com/?s=";
 
+    static String JSON_TITLE="Title";
+
+
 
 }
