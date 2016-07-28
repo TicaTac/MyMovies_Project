@@ -27,6 +27,7 @@ public class myDbHelper extends SQLiteOpenHelper{
 
         Log.d("DB ","Create DB: "+createQuery);
         db.execSQL(createQuery);
+        Log.d("CreateDB","Created");
 
     }
 

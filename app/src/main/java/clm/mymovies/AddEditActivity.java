@@ -54,9 +54,11 @@ public class AddEditActivity extends AppCompatActivity {
         // commands.toaster(this, "dbID " + dbID);
 
         if (imdbID != null) {
+
             String url = myConstants.OMDB_ITEM_IMDB_QUERY + imdbID;
             GetJSONTask getJsonWithIMDB = new GetJSONTask();
             getJsonWithIMDB.execute(url);
+
         } else if (dbID >= 0) {
 
             // load SQL record
@@ -121,6 +123,13 @@ public class AddEditActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+
+    }
 
     /////////////////////////////////// PARSE JSON ///////////////////////////////////////////
     protected void parseJsonForMovieRecord(String result) {

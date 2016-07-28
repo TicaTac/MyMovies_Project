@@ -27,12 +27,20 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight=".5">
+        android:layout_weight=".3">
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/searchLV" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Searching..."
+            android:id="@+id/searchMessageTV" />
 
     </LinearLayout>
 

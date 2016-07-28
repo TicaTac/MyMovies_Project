@@ -20,12 +20,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class SearchActivity extends AppCompatActivity {
-    TextView debugTV;
+    TextView searchMessageTV;
     ListView searchLV;
     ArrayList<myMovieQuery> searchResults;
     List<String> searchResultsTitles;
@@ -33,6 +35,8 @@ public class SearchActivity extends AppCompatActivity {
     EditText searchET;
     String urlQuery;
     myGetImageHelper imageHelper;
+    String JsonQueryResult;
+
 
     ///////////////////////////////////////////////// onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     @Override
@@ -59,14 +63,9 @@ public class SearchActivity extends AppCompatActivity {
                 finish();
             }
         });
+        JsonQueryResult="";
 
-       /* searchLV.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Toast.makeText(SearchActivity.this,"",Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });*/
+        searchMessageTV = (TextView) findViewById(R.id.searchMessageTV);
 
         searchET = (EditText) findViewById(R.id.searchET);
         searchET.setText("Batman");
@@ -79,7 +78,11 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.d("Search", "Query Text Change (ET)");
+                searchLV.setVisibility(View.INVISIBLE);
+                searchMessageTV.setText("Searching..");
+                searchMessageTV.setVisibility(View.VISIBLE);
                 loadJsonQuery();
+
             }
 
             @Override
@@ -87,19 +90,7 @@ public class SearchActivity extends AppCompatActivity {
 
             }
         });
-        // on itemClick Listener -> load movie data to addEditActivity
-/*        searchLV.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });*/
-        // Cancel Button
         Button cancelBTN = (Button) findViewById(R.id.cancelSearchBTN);
         cancelBTN.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +116,14 @@ public class SearchActivity extends AppCompatActivity {
 
     ////////////////////////////////////////////////////End onCreate \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     public void loadJsonQuery() {
-        urlQuery = myConstants.OMDB_QUERY_PREFIX + searchET.getText().toString()+"*";
+        String query = null;
+        try {
+            query = URLEncoder.encode(searchET.getText().toString()+"*", "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        urlQuery = myConstants.OMDB_QUERY_PREFIX +query;
         getJson= new GetJSONTask();
         getJson.execute(urlQuery);
 
@@ -139,6 +137,13 @@ public class SearchActivity extends AppCompatActivity {
                 = new mySearchAdapter( SearchActivity.this ,R.id.searchMovieNameTV,searchResults);
         adapter.notifyDataSetChanged();
         searchLV.setAdapter(adapter);
+        if (adapter.getCount()>0){
+            searchMessageTV.setVisibility(View.INVISIBLE);
+        }
+        else {
+            searchMessageTV.setVisibility(View.VISIBLE);
+
+        }
 
 
 
@@ -151,32 +156,44 @@ public class SearchActivity extends AppCompatActivity {
 
             //the main JSON object - initialize with string
             JSONObject jsonResult = new JSONObject(result);
+            if (jsonResult.getBoolean("Response")==true) {
+                //extract data with getString, getInt getJsonObject - for inner objects or JSONArray- for inner arrays
 
-            //extract data with getString, getInt getJsonObject - for inner objects or JSONArray- for inner arrays
-            JSONArray myArray = jsonResult.getJSONArray("Search");
+                Log.d("ParseJson","Loading Results! ");
+                searchMessageTV.setText("Loading Results..");
 
-            for (int i = 0; i < myArray.length(); i++) {
-                //get temp inner object [i] inside the array
-                JSONObject tempObj = myArray.getJSONObject(i);
-                // parse the inside of the object to a new myMovieQuery
-                // todo create movie
-                imageHelper=new myGetImageHelper();
-                imageHelper.execute(tempObj.getString("Poster"));
-                // TODO: 7/27/2016  if poster is null 
-                Bitmap bmp=   imageHelper.get();
-               // Log.d("ParseJson","imageHelper.get :"+bmp.toString());
-                myMovieQuery movie= new myMovieQuery(
+                JSONArray myArray = jsonResult.getJSONArray("Search");
+
+                for (int i = 0; i < myArray.length(); i++) {
+                    //get temp inner object [i] inside the array
+                    JSONObject tempObj = myArray.getJSONObject(i);
+                    // parse the inside of the object to a new myMovieQuery
+                    // todo create movie
+                    imageHelper = new myGetImageHelper();
+                    imageHelper.execute(tempObj.getString("Poster"));
+                    // TODO: 7/27/2016  if poster is null
+                    Bitmap bmp = imageHelper.get();
+                    // Log.d("ParseJson","imageHelper.get :"+bmp.toString());
+                    myMovieQuery movie = new myMovieQuery(
                             tempObj.getString("Title"),
                             tempObj.getString("Year"),
                             tempObj.getString("imdbID"),
                             tempObj.getString("Type"),
                             tempObj.getString("Poster"),
                             bmp);
-                Log.d("ParseJson","imageHelper.get :"+imageHelper.toString());
-                queryList.add(movie);
+                    Log.d("ParseJson", "imageHelper.get :" + imageHelper.toString());
+                    queryList.add(movie);
+                }
+                Log.d("ParseJson","Results "+queryList.size());
+
+            } else
+                {
+                    String errorMessage=jsonResult.getString("Error");
+                    Log.d("ParseJson","Error: "+errorMessage);
+                    searchMessageTV.setText(errorMessage);
+                }
 
 
-            }
 
 
 
@@ -216,13 +233,13 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-        /*    StringBuilder stringBuild = new StringBuilder();
-            stringBuild.append();//{"Response":"False","Error":"Movie not found!"}
-          */
+            JsonQueryResult=result;
+
             if (!result.equals(" {\"Response\":\"False\",\"Error\":\"Movie not found!\"} ")) {
                 searchResults = parseJsonForMovieQuery(result);
 
             }
+            searchLV.setVisibility(View.VISIBLE);
             refreshSearchList();
         }
 
