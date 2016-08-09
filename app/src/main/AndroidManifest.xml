@@ -22,6 +22,14 @@
         </activity>
         <activity android:name=".AddEditActivity" />
         <activity android:name=".SearchActivity"></activity>
+    
+        <provider
+            android:authorities="clm.mymovies"
+            android:name=".mMoviesContentProvider"
+            android:exported="true"
+            android:enabled="true">
+        </provider>
+    
     </application>
 
 </manifest>

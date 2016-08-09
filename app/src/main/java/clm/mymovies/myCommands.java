@@ -102,7 +102,7 @@ public class myCommands {
 
     public void saveImageToDB(int dbID){
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
     public String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality)
     {
