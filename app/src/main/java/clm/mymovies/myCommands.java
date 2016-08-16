@@ -63,7 +63,11 @@ public class myCommands {
             cv.put(myConstants.DB_MOVIE_NAME,movie.name);
             cv.put(myConstants.DB_MOVIE_DESC,movie.description);
             cv.put(myConstants.DB_MOVIE_URL , movie.url);
-            cv.put(myConstants.DB_MOVIE_IMAGE,encodeToBase64(movie.image, Bitmap.CompressFormat.PNG,100));
+            if (movie.image!=null) {
+                String image64 = encodeToBase64(movie.image, Bitmap.CompressFormat.PNG, 100);
+                cv.put(myConstants.DB_MOVIE_IMAGE, image64);
+            }
+
 
             helper.getWritableDatabase().update(myConstants.DB_TABLE,cv,myConstants.DB_ID+"=?",new String[]{""+movie._id});
         }

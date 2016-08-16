@@ -1,5 +1,6 @@
 package clm.mymovies;
 
+import android.animation.ObjectAnimator;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;

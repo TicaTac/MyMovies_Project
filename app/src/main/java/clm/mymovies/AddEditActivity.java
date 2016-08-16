@@ -86,6 +86,7 @@ public class AddEditActivity extends AppCompatActivity {
 
                 if (dbID >= 0) {
                     myMovieDB movie = new myMovieDB(name, desc, url, image);
+                    movie._id=dbID;
                     commands.updateDb(movie);
                 } else {
                     myMovieDB movie = new myMovieDB(name, desc, url, image);
